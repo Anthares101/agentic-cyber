@@ -1,11 +1,13 @@
 # Agentic Cyber
 
-## General
+The root `CLAUDE.md` has information about hacking methodology and different guidelines. Also, there are some custom skills loaded into the project and dedicated agents.
 
-Just a simple `CLAUDE.md` with information about hacking methodology and different guidelines. It is good enough for CTFs, HackTheBox or even real hacking if you are bave enough to one shot stuff.
+## scope-recon agent
 
-## Attack Surface Discovery
+During the reconnaissance phase, launch this agent first: "Run scope-recon for Acme Corp, subsidiaries in scope". The agent will generate the file `state/scope.json`.
 
-This is an agentic pipeline focussed on discovering the exposed perimeter of a company. It will produce a report with information about all the attack surface of the target to ease the reconnaissance phase.
+## Scout pipeline
 
-![Pipeline diagram](assets/attack_surface_pipeline.svg)
+If the `state/scope.json` assets are indeed part of the assesment, run this pipeline, it is focussed on discovering the exposed perimeter of a company. It will produce a report with information about all the attack surface of the target to ease the reconnaissance phase.
+
+![Pipeline diagram](assets/perimeter_pipeline.svg)
