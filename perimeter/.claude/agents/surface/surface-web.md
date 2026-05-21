@@ -118,6 +118,9 @@ The `interesting` array is important — populate it with anything that
 stands out and warrants attention from the hunters. The misconfig hunter
 reads this to prioritise what to check.
 
+## Cleanup
+- Make sure to delete all generated files inside the `tmp/` directory once you finish
+
 ## What NOT to do
 - Do not attempt authentication or submit any forms
 - Do not run ffuf without rate limiting

@@ -48,6 +48,9 @@ Regardless of mode, write a single state/scope.json:
   "asns": ["AS12345"]
 }
 
+## Cleanup
+- Make sure to delete all generated files inside the `tmp/` directory once you finish
+
 ## What NOT to do
 - Do not invent scope entries — only record confirmed data
 - Do not perform active scanning (that is Phase 2)
