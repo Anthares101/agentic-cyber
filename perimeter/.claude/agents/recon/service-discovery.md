@@ -5,6 +5,8 @@ description: Use after scope recon. Performs port scanning via nmap -F and Shoda
              inventory for downstream agents.
 tools: Bash, Read, Write
 model: sonnet
+skills:
+  - security-awareness
 ---
 
 # Service discovery agent

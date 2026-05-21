@@ -28,4 +28,4 @@ When suggesting or using commands:
 - If what you want to do can be achieved using an installed tool, use it instead of creating your own tool/script.
 - Explain what the command does.
 - If you need to install something stop and ask for installation.
-- Wordlists and rules locations: /usr/share/seclists/ and /home/kali/Wordlists.
+- Wordlists and rules locations: /usr/share/seclists and /home/kali/Wordlists.

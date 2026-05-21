@@ -7,6 +7,8 @@ tools: Bash, Read, Write
 model: sonnet
 skills:
   - anthares-passive-recon
+  - security-awareness
+  - openai-playwright
 ---
 
 # Scope recon agent
