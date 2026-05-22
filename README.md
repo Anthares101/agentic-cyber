@@ -4,6 +4,9 @@ The root `CLAUDE.md` has information about hacking methodology and different gui
 
 ## Requirements
 
+> [!WARNING]
+> Everything is designed to be used from a Linux environment!
+
 Install this CLI tools in the host, also note that the locations given to the agents to look for Wordlists are `/usr/share/seclists` and `/home/kali/Wordlists`:
 
 ```
@@ -15,9 +18,17 @@ nmap
 httpx
 ffuf
 katana
+ldapsearch
+ssh-audit
+dig
+jq
+nuclei
+redis-cli
+snmpwalk
+aws
 ```
 
-In addition to the CLI tools, install the `superpowers` skill and these skills from `trailofbits/skills-curated` marketplace:
+In addition to the CLI tools, make sure you have a valid NVD API key set in `NVD_API_KEY` to improve the `cve-hunter` agent speed, install the `superpowers` skill and these skills from `trailofbits/skills-curated` marketplace:
 ```
 ffuf-web-fuzzing
 ghidra-headless
