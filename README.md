@@ -32,10 +32,9 @@ grype
 playwright-cli
 ```
 
-In addition to the CLI tools, make sure you have a valid NVD API key set in `NVD_API_KEY` to improve the `cve-hunter` agent speed, install the `superpowers` skill and these skills from `trailofbits/skills-curated` marketplace:
+In addition to the CLI tools, make sure you have a valid NVD API key set in `NVD_API_KEY` to improve the `cve-hunter` agent speed and install these skills from `trailofbits/skills-curated` marketplace:
 ```
 ffuf-web-fuzzing
-ghidra-headless
 humanizer
 security-awareness
 openai-playwright
