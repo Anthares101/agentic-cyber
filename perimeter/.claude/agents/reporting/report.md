@@ -8,6 +8,7 @@ description: Use during reporting phase. Generates a structured JSON report
 tools: Bash, Read, Write
 model: sonnet
 skills:
+  - security-awareness
   - humanizer
 ---
 
