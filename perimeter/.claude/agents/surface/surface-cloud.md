@@ -191,7 +191,7 @@ Under a `cloud` key:
 ```
 
 ## Cleanup
-- Make sure to delete all generated files inside the `tmp/` directory once you finish except for the cached cloud IP ranges
+- Make sure to delete all your generated files inside the `tmp/` directory once you finish except for the cached cloud IP ranges
 
 ## What NOT to do
 - Do not attempt to list bucket contents — existence only

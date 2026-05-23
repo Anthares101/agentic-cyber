@@ -52,8 +52,7 @@ Repeat until no low/none entries remain or max 2 re-run cycles.
 ### Phase 5 — Report
 Spawn one agent:
   agent: report
-  task: "Read all state files and generate the final report
-         in reports/assessment-YYYY-MM-DD.md"
+  task: "Read all state files and generate the final report in the reports directory"
 
 ## State file rules
 - Never delete or overwrite state files between phases.

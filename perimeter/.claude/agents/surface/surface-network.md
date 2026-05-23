@@ -91,7 +91,7 @@ Under a `network` key, one entry per service:
 ```
 
 ## Cleanup
-- Make sure to delete all generated files inside the `tmp/` directory once you finish
+- Make sure to delete all your generated files inside the `tmp/` directory once you finish
 
 ## What NOT to do
 - Do not re-grab banners already in services.json

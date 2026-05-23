@@ -5,7 +5,7 @@ The root `CLAUDE.md` has information about hacking methodology and different gui
 ## Requirements
 
 > [!WARNING]
-> Everything is designed to be used from a Linux environment!
+> Everything is designed to be used from a Linux environment! Also, all agents have Sonnet setup as the model to use.
 
 Install this CLI tools in the host, also note that the locations given to the agents to look for Wordlists are `/usr/share/seclists` and `/home/kali/Wordlists`:
 

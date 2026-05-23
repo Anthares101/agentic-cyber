@@ -115,7 +115,7 @@ Fields:
 - `notes`: anything unusual that does not fit other fields
 
 ## Cleanup
-- Make sure to delete all generated files inside the `tmp/` directory once you finish
+- Make sure to delete all your generated files inside the `tmp/` directory once you finish
 
 ## What NOT to do
 - Do not scan hosts not in state/scope.json

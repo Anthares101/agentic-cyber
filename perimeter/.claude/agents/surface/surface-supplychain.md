@@ -213,7 +213,7 @@ Under a `supplychain` key:
 ```
 
 ## Cleanup
-- Make sure to delete all generated files inside the `tmp/` directory once you finish
+- Make sure to delete all your generated files inside the `tmp/` directory once you finish
 
 ## What NOT to do
 - Do not clone repositories or read their content beyond what

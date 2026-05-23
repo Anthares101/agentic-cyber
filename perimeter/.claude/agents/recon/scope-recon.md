@@ -49,7 +49,7 @@ Regardless of mode, write a single state/scope.json:
 }
 
 ## Cleanup
-- Make sure to delete all generated files inside the `tmp/` directory once you finish
+- Make sure to delete all your generated files inside the `tmp/` directory once you finish
 
 ## What NOT to do
 - Do not invent scope entries — only record confirmed data
