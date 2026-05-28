@@ -29,3 +29,8 @@ When suggesting or using commands:
 - Explain what the command does.
 - If you need to install something stop and ask for installation.
 - Wordlists and rules locations: /usr/share/seclists and /home/kali/Wordlists.
+
+# Pipelines
+
+Available agent based pipelines:
+- [Scout Pipeline](SCOUT-PIPELINE.md)

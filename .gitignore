@@ -1,2 +1,4 @@
-perimeter/state/
-perimeter/reports/
+tmp/
+state/
+reports/
+settings.local.json
