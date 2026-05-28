@@ -42,7 +42,7 @@ openai-playwright
 
 ## scope-recon agent
 
-During the reconnaissance phase, launch this agent first: "Run scope-recon for Acme Corp, subsidiaries in scope". The agent will generate the file `state/scope.json`.
+During the reconnaissance phase, launch this agent first: "Run scope-recon agent for Acme Corp, subsidiaries in scope". The agent will generate the file `state/scope.json`.
 
 In case the scope is already known, provide a file to the agent and it will process it to generate `state/scope.json` from it.
 
