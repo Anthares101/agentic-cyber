@@ -1,82 +1,61 @@
 ---
 name: anthares-passive-recon
-description: Use when performing passive reconnaissance and enumeration against a target company perimeter — covers subsidiary discovery, domain/IP space mapping, subdomain enumeration, CDN bypass, cloud asset discovery, service fingerprinting, sensitive data exposure (breaches, secrets, credentials, emails), O365 user enumeration, and Google/search-engine dorking — all without active scanning or direct interaction with target systems.
+description: Use when performing passive reconnaissance against a company perimeter for authorized pentests, bug bounty, or red team scoping - enumerating subsidiaries, domains, subdomains, IP ranges, ASNs, cloud assets, or gathering OSINT via search dorks (Google/Bing/Yandex/GHDB), TLS certificate transparency, WHOIS/RDAP across RIRs, or archived content
+metadata:
+  type: reference
 ---
 
 # Anthares Passive Recon
 
-Structured passive reconnaissance methodology for mapping a company's full external attack surface without triggering IDS/WAF/EDR. Covers everything from subsidiary discovery to breach data and cloud assets.
+## Overview
 
-## Methodology Order
+Reference playbook for **passive** reconnaissance of a company's external perimeter. Passive = no direct interaction that touches the target's infrastructure beyond standard DNS / public datasets.
 
-```
-Subsidiaries → IP/Domain Space → Subdomains → Polishing/Validation
-→ CDN Bypass → Cloud Assets → Service Info → Sensitive Data → Dorks
-```
+## Recon Workflow
 
-This skill is modular — load only the file(s) relevant to the phase you are working on. The main file is a navigation hub; full content lives in the linked category files.
-
----
-
-## File Map
-
-| Phase | File | Content |
-|-------|------|---------|
-| 1 | [01-subsidiary-discovery.md](01-subsidiary-discovery.md) | Crunchbase, Aleph, Google, LinkedIn — subsidiary and corporate-tree mapping |
-| 2 | [02-ip-domain-enumeration.md](02-ip-domain-enumeration.md) | Reverse WHOIS, BuiltWith, ASN/IP, Shodan, Censys, TLS certs, SecurityTrails, reverse DNS |
-| 3 | [03-subdomain-enumeration.md](03-subdomain-enumeration.md) | dnsenum, assetfinder, subfinder, crt, PureDNS |
-| 4 | [04-polishing-validation.md](04-polishing-validation.md) | GitHub recon, social media, IP extraction, liveness, public/private split, httpx, DNSdumpster |
-| 5 | [05-cdn-bypass.md](05-cdn-bypass.md) | Cloudflare/Sucuri/Incapsula bypass — CloudFlair, Cloudmare, historical DNS/TLS |
-| 6 | [06-cloud-assets.md](06-cloud-assets.md) | Cloud asset discovery via kaeferjaeger SNI IP ranges |
-| 7 | [07-service-info.md](07-service-info.md) | Passive port/service info — Shodan bulk host lookup, filters |
-| 8 | [08-sensitive-information.md](08-sensitive-information.md) | OSINT tools, breaches, public secrets, cloud storage, emails, O365 user enum |
-| 9 | [09-google-dorks.md](09-google-dorks.md) | Dork references, high-value queries, multi-engine strategy |
-| 10 | [10-compass-osint.md](10-compass-osint.md) | Full Compass Security OSINT Cheat Sheet — Google/Bing/Yandex, archives, Shodan filters, social network OSINT, key tools, books |
-| Ref | [reference.md](reference.md) | Quick tool cheatsheet + OPSEC notes |
-
----
-
-## Decision Tree — Where to Start
+Work outside-in. Each phase feeds the next:
 
 ```
-Are you scoping a brand-new target company?
-  → Start with 01-subsidiary-discovery.md, then 02-ip-domain-enumeration.md
-
-Do you already have a domain and want subdomains?
-  → Jump to 03-subdomain-enumeration.md → 04-polishing-validation.md
-
-Target is behind Cloudflare/Sucuri/Incapsula?
-  → 05-cdn-bypass.md
-
-Looking for cloud-hosted assets (AWS/Azure/GCP)?
-  → 06-cloud-assets.md
-
-Need open-port/service info without scanning?
-  → 07-service-info.md (Shodan)
-
-Hunting credentials, breaches, secrets, emails, O365 users?
-  → 08-sensitive-information.md
-
-Need to find indexed sensitive documents/admin panels?
-  → 09-google-dorks.md
-
-Person/social-media OSINT or advanced search-engine operators?
-  → 10-compass-osint.md
-
-Need a quick command lookup?
-  → reference.md
+1. Org discovery    → who owns what (parent + subsidiaries)
+2. Domains & IPs    → reverse WHOIS, RIRs, TLS certs, BuiltWith
+3. Subdomains       → amass / subfinder / crt.sh / PureDNS
+4. OSINT            → dorks, archived data, source code
+5. Cloud assets     → SNI scans of major providers
+6. Polish           → resolve, dedupe, validate scope
 ```
 
----
+Re-run earlier phases when later phases reveal new pivots (new org name → re-do reverse WHOIS; new IP → re-do reverse DNS).
 
-## OPSEC Summary
+## Which reference to load
 
-- All techniques in this skill are **passive** — no direct interaction with target systems.
-- Some sub-techniques (e.g., O365 password spraying in section 8) are **NOT passive** — confirm authorization before using.
-- See [reference.md](reference.md) for the full OPSEC notes and tool cheatsheet.
+| Task | Load |
+|---|---|
+| Find subsidiaries, parent domains, IP ranges, ASNs, subdomains, cloud infrastructure | `asset-enumeration.md` |
+| Build search-engine dorks (Google, Bing, Yandex, GHDB) or pull archived pages | `search-engine-dorking.md` |
 
----
+Read only what's needed. The references are independent; you do not need to load all of them.
 
-## Source Material
+## Core principles
 
-Based on the Anthares Passive Recon methodology and the Compass Security OSINT Cheat Sheet (2017-01). All original content is preserved across the modular files.
+- **Outside-in, then pivot.** Start from the parent company name → expand to domains, IPs, subdomains, cloud. Every new asset (a new acquired company, an unexpected ASN, an unexpected cloud IP) is a pivot point to re-run earlier steps.
+- **Cross-validate sources.** No single dataset is complete. Reverse WHOIS may miss assets the RIR shows; Certificate Transparency may show subdomains DNS bruteforce misses. Combine.
+- **Respect API quotas.** SecurityTrails/Shodan/Censys have strict quotas - cache results, use `-passive` modes, and download bulk JSON once rather than re-querying.
+- **GDPR limits European TLDs.** WHOIS data for `.es`, `.de`, `.fr`, etc. is often redacted. Use the country's NIC directly (e.g., dominios.es).
+- **Validate before reporting.** Resolve every domain you list; flag dead ones. A scope full of NXDOMAIN entries wastes everyone's time.
+
+## Quick reference: top tools per phase
+
+| Phase | First-reach tools |
+|---|---|
+| Org discovery | Crunchbase, Aleph (occrp.org), Google |
+| Reverse WHOIS | Whoxy, ViewDNS, NetworksDB |
+| RIR lookups | IANA, ARIN, RIPE, APNIC, LACNIC, AFRINIC |
+| TLS certs | crt.sh, Shodan, Censys, SecurityTrails (haktrails) |
+| Subdomains | amass, subfinder, assetfinder, dnsenum, PureDNS, crt |
+| Cloud | sni-ip-ranges (kaeferjaeger.gay) |
+
+## When NOT to use this skill
+
+- Active scanning (nmap, masscan, web fuzzing) - this skill is **passive** only
+- Exploitation, post-exploitation, payload generation
+- Internal-only assets reachable only from inside a corporate network
