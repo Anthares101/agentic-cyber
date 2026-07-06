@@ -241,8 +241,11 @@ EOF
 Read `reports/{date}/.ranking-input.json` (web + non-web assets) and, for each
 asset, merge in its findings (from findings.json, matched by host/hostname:port)
 and its leads. Assess how rewarding each is to test BY HAND. Reason explicitly;
-do not compute a formula. Then patch the `manual_review_priority.ranked` array
-into the JSON report.
+do not compute a formula. Then patch `manual_review_priority.ranked` into the
+JSON with a small Python script (json.load → set the array → json.dump). Do not
+read the full report-{date}.json into your context to edit it — it is large. Rank
+the notable/distinct assets (collapse redundant per-port rows on the same host);
+assets not individually ranked stay covered by perimeter_inventory and leads.
 
 Rank most→least interesting using this rubric (higher tiers dominate). It
 applies to web AND non-web services — interleave them by interest, do not
@@ -563,6 +566,9 @@ state/                          ← empty, ready for next run
   they must cover non-web services (VPN, mail, DB, appliances) too
 - Do not fabricate priority rankings or leads — they must derive only from the
   tech/findings/coverage already present in the state files
+- Do not Read the full report-{date}.json into your context in Step 1b — it is
+  large; patch manual_review_priority.ranked with a small Python script instead,
+  and rank notable/distinct assets only (do not emit an entry per redundant row)
 - The manual-review priority is a triage aid, not a severity rating — never
   present a high interest ranking as a confirmed vulnerability, and always tag
   third-party SaaS for scope confirmation
