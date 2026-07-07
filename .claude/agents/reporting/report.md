@@ -30,11 +30,15 @@ The report is a complete perimeter picture. It contains:
   interleaved — from most to least rewarding to test by hand
 
 You exclude disproved findings (verified: false). You include confirmed
-findings (verified: "confirmed") and unconfirmed findings
-(verified: "unable-to-verify") in separate sections, plus a section for
-findings added after the verification phase that still need confirmation.
-You dedicate a section to assets the pipeline could not check with
-confidence. On completion you archive all state files into the report
+findings (verified: "confirmed") in their own section. Unconfirmed findings
+(verified: "unable-to-verify") and findings added after the verification
+phase (verified: null) that still need confirmation are kept as separate
+keys in the JSON, but presented together in the markdown under a single
+"Findings Requiring Manual Verification" section with a reason column.
+Assets the pipeline could not check with confidence are retained in the
+JSON (coverage.low_confidence_assets / no_fingerprint_assets) and reflected
+in the markdown Coverage Map — they no longer get a dedicated markdown
+section. On completion you archive all state files into the report
 directory so each run is self-contained and the state directory is clean
 for the next run.
 
@@ -300,6 +304,25 @@ code blocks, or reproduction commands.
 
 ---
 
+## Contents
+
+1. [Summary](#summary)
+2. [Scope](#scope)
+3. [Coverage Map](#coverage-map)
+4. [Perimeter Inventory](#perimeter-inventory)
+5. [Attack Surface](#attack-surface)
+6. [Leads & Points of Interest](#leads--points-of-interest)
+7. [Confirmed Findings](#confirmed-findings)
+8. [Findings Requiring Manual Verification](#findings-requiring-manual-verification)
+9. [Manual Review Priority](#manual-review-priority)
+
+{Emit this list verbatim — the anchors are GitHub-style slugs of the section
+headings. Omit a line only if that section is empty (no confirmed findings, no
+leads, etc.) and you drop the section itself. If you rename or reorder sections,
+keep this index in sync.}
+
+---
+
 ## Summary
 {humanizer: write a concise technical summary paragraph covering
 total services discovered, confirmed finding count broken down
@@ -322,6 +345,34 @@ have no fingerprint. Tone is direct and factual — no marketing language.}
 
 ---
 
+## Coverage Map
+
+| Confidence | Host+Port combinations |
+|---|---|
+| High | {count} |
+| Medium | {count} |
+| Low | {count} |
+| None (no fingerprint) | {count} |
+
+**Total services in scope:** {total}
+
+**Flagged coverage gaps:**
+{Render each coverage.gaps entry as a readable bullet — never dump the raw
+Python/JSON dict. Format:
+`- **{human label for gap_type}{ — hostname (host), port(s) if host != "*"}:** {description}`
+followed by an indented `  _Confidence impact: {confidence_impact}_` line when
+that field is present. Use the full description; do not truncate it.}
+
+{humanizer: one paragraph interpreting the coverage results.
+What percentage was worked with high confidence, what remains
+uncertain, and what the low/no-confidence assets have in common
+if anything (e.g. all on the same CIDR, all running the same
+service type). Note that the low-confidence and no-fingerprint
+host:ports are enumerated in the JSON report under
+`coverage.low_confidence_assets` and `coverage.no_fingerprint_assets`.}
+
+---
+
 ## Perimeter Inventory
 {humanizer: one line — full inventory of {total_host_ports} host:ports
 enumerated (web and non-web); the {reachable count} reachable ones are
@@ -334,41 +385,6 @@ JSON report.}
 
 > Full inventory incl. filtered/unfingerprinted ports:
 > `report-{date}.json` → `perimeter_inventory.items` ({total_host_ports} entries).
-
----
-
-## Manual Review Priority
-{humanizer: one sentence on the ranking logic — most→least rewarding to test
-by hand, web and non-web interleaved; a triage aid, not a severity rating.}
-
-### Tier 1 — Custom apps, auth logic, remote-access & data services
-
-| Rank | Asset | Port | Service | Signals | Findings / Leads | Why |
-|---|---|---|---|---|---|---|
-{rows from manual_review_priority.ranked in this tier}
-
-### Tier 2 — Non-prod & high-value
-{same table structure}
-
-### Tier 3 — Old / EOL / odd tech & protocol hygiene
-{same table structure}
-
-### Tier 4 — Commodity CMS
-{same table structure}
-
-### Tier 5 — Edges & third-party SaaS
-{same table structure — include the scope_flag note for SaaS entries}
-
----
-
-## Leads & Points of Interest
-{humanizer: explain these are manual-test leads surfaced during surface
-analysis (web, network, cloud) that are not confirmed findings — starting
-points for the manual review above.}
-
-| Host | Port | Surface | Lead |
-|---|---|---|---|
-{one row per leads.items entry, grouped by host}
 
 ---
 
@@ -399,6 +415,17 @@ factual and reference specific counts.}
 ### Supply Chain
 - Third-party integrations: {third_party_services list}
 - CDN/JS dependencies observed: {count}
+
+---
+
+## Leads & Points of Interest
+{humanizer: explain these are manual-test leads surfaced during surface
+analysis (web, network, cloud) that are not confirmed findings — starting
+points for the manual review below.}
+
+| Host | Port | Surface | Lead |
+|---|---|---|---|
+{one row per leads.items entry, grouped by host}
 
 ---
 
@@ -440,70 +467,54 @@ its direct impact, and a concrete remediation step. No filler.}
 
 ---
 
-## Unconfirmed Findings — Manual Testing Required
+## Findings Requiring Manual Verification
 
-{humanizer: explain that these findings are based on confirmed
-version strings matched against NVD with CVSS >= 7.0 but could
-not be automatically verified due to missing nuclei templates.
-Each entry includes what a tester needs to do to confirm it.}
+{humanizer: explain that none of these could be automatically confirmed and
+each needs a tester to validate it by hand. Two reasons appear, shown in the
+Reason column: (1) a confirmed version string matched an NVD CVE with
+CVSS >= 7.0 but no nuclei template was available to confirm reachability;
+(2) the finding was added after the verification phase — for example by a
+coverage re-run — and was never re-verified. Neither is disproved. Draw both
+sets from the JSON: findings.unconfirmed.items and
+findings.pending_verification.items.}
 
-| ID | CVE | Host | Port | CVSS | Version Matched |
-|---|---|---|---|---|---|
-| {id} | {cve} | {hostname} | {port} | {cvss} | {version_string} |
+| ID | Host | Port | Severity | CVE / CVSS | Version Matched | Reason |
+|---|---|---|---|---|---|---|
+| {id} | {hostname} | {port} | {severity} | {cve} / {cvss} | {version_string} | {reason} |
 
-{for each unconfirmed finding:}
+Reason column values:
+- unconfirmed items (findings.unconfirmed.items): `version match, no nuclei template`
+- pending items (findings.pending_verification.items): `added post-verification, not re-verified`
+  (leave CVE / CVSS / Version Matched blank with `—` where the item has no CVE data)
+
+{for each entry:}
 
 #### [{id}] {title}
-**Manual testing note:** {manual_testing_note}
+**Manual testing note:** {manual_testing_note or verification_note}
 
 ---
 
-## Findings Pending Verification
+## Manual Review Priority
+{humanizer: one sentence on the ranking logic — most→least rewarding to test
+by hand, web and non-web interleaved; a triage aid, not a severity rating.}
 
-{humanizer: explain these were added after the verification phase — for
-example by a coverage re-run — and have not been re-verified. They are not
-disproved; they need manual confirmation.}
+### Tier 1 — Custom apps, auth logic, remote-access & data services
 
-| ID | Host | Port | Severity | Note |
-|---|---|---|---|---|
-| {id} | {hostname} | {port} | {severity} | {verification_note or manual_testing_note} |
+| Rank | Asset | Port | Service | Signals | Findings / Leads | Why |
+|---|---|---|---|---|---|---|
+{rows from manual_review_priority.ranked in this tier}
 
----
+### Tier 2 — Non-prod & high-value
+{same table structure}
 
-## Low Confidence Assets
+### Tier 3 — Old / EOL / odd tech & protocol hygiene
+{same table structure}
 
-{humanizer: explain that these host+port combinations were
-reached by the pipeline but produced no findings after all
-hunter passes. This may mean they are clean, or that the
-service was rate-limited, behind authentication, or otherwise
-not fully assessable by automated tooling. Recommend manual
-review prioritising services exposed to the internet.}
+### Tier 4 — Commodity CMS
+{same table structure}
 
-| Host | Port | Service | Hunter passes | Confidence |
-|---|---|---|---|---|
-| {host} | {port} | {service} | {rerun_count} | Low |
-
----
-
-## Coverage Map
-
-| Confidence | Host+Port combinations |
-|---|---|
-| High | {count} |
-| Medium | {count} |
-| Low | {count} |
-| None (no fingerprint) | {count} |
-
-**Total services in scope:** {total}
-
-**Flagged coverage gaps:**
-{list coverage.gaps entries}
-
-{humanizer: one paragraph interpreting the coverage results.
-What percentage was worked with high confidence, what remains
-uncertain, and what the low/no-confidence assets have in common
-if anything (e.g. all on the same CIDR, all running the same
-service type).}
+### Tier 5 — Edges & third-party SaaS
+{same table structure — include the scope_flag note for SaaS entries}
 ```
 
 ## Step 3 — Archive run artifacts
